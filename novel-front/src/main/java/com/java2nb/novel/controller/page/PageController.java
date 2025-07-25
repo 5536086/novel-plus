@@ -82,7 +82,7 @@ public class PageController extends BaseController {
     @RequestMapping(path = {"/", "/index", "/index.html"})
     public String index(Model model) {
         //加载小说首页小说基本信息线程
-        CompletableFuture<Map<Byte, List<BookSettingVO>>> bookCompletableFuture = CompletableFuture.supplyAsync(
+        CompletableFuture<Map<String, List<BookSettingVO>>> bookCompletableFuture = CompletableFuture.supplyAsync(
             bookService::listBookSettingVO, threadPoolExecutor);
         //加载首页新闻线程
         CompletableFuture<List<News>> newsCompletableFuture = CompletableFuture.supplyAsync(newsService::listIndexNews,

@@ -1,6 +1,5 @@
 package com.java2nb.novel.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.java2nb.novel.core.cache.CacheKey;
 import com.java2nb.novel.core.cache.CacheService;
@@ -25,7 +24,6 @@ import io.github.xxyopen.web.util.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.DateUtils;
 import org.mybatis.dynamic.sql.SortSpecification;
 import org.mybatis.dynamic.sql.render.RenderingStrategies;
@@ -48,7 +46,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 import static com.java2nb.novel.mapper.BookCategoryDynamicSqlSupport.bookCategory;
-import static com.java2nb.novel.mapper.BookCategoryDynamicSqlSupport.sort;
 import static com.java2nb.novel.mapper.BookCommentDynamicSqlSupport.bookComment;
 import static com.java2nb.novel.mapper.BookContentDynamicSqlSupport.bookContent;
 import static com.java2nb.novel.mapper.BookContentDynamicSqlSupport.content;
@@ -108,19 +105,19 @@ public class BookServiceImpl implements BookService {
 
     @SneakyThrows
     @Override
-    public Map<Byte, List<BookSettingVO>> listBookSettingVO() {
-        String result = cacheService.get(CacheKey.INDEX_BOOK_SETTINGS_KEY);
-        if (result == null || result.length() < Constants.OBJECT_JSON_CACHE_EXIST_LENGTH) {
-            List<BookSettingVO> list = bookSettingMapper.listVO();
-            if (list.size() == 0) {
+    public Map<String, List<BookSettingVO>> listBookSettingVO() {
+        List<BookSettingVO> list = cacheService.getList(CacheKey.INDEX_BOOK_SETTINGS_KEY, BookSettingVO.class);
+        if (list == null || list.isEmpty()) {
+            list = bookSettingMapper.listVO();
+            if (list.isEmpty()) {
                 //如果首页小说没有被设置，则初始化首页小说设置
                 list = initIndexBookSetting();
             }
-            result = new ObjectMapper().writeValueAsString(
-                list.stream().collect(Collectors.groupingBy(BookSettingVO::getType)));
-            cacheService.set(CacheKey.INDEX_BOOK_SETTINGS_KEY, result, 3600 * 24);
+            cacheService.setObject(CacheKey.INDEX_BOOK_SETTINGS_KEY, list, 3600 * 24);
         }
-        return new ObjectMapper().readValue(result, Map.class);
+        return list.stream().collect(
+            Collectors.groupingBy(book -> book.getType().toString())
+        );
     }
 
 
@@ -170,11 +167,10 @@ public class BookServiceImpl implements BookService {
         return new ArrayList<>(0);
     }
 
-
     @Override
     public List<Book> listClickRank() {
-        List<Book> result = (List<Book>) cacheService.getObject(CacheKey.INDEX_CLICK_BANK_BOOK_KEY);
-        if (result == null || result.size() == 0) {
+        List<Book> result = cacheService.getList(CacheKey.INDEX_CLICK_BANK_BOOK_KEY, Book.class);
+        if (result == null || result.isEmpty()) {
             result = listRank((byte) 0, 10);
             cacheService.setObject(CacheKey.INDEX_CLICK_BANK_BOOK_KEY, result, 5000);
         }
@@ -183,8 +179,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> listNewRank() {
-        List<Book> result = (List<Book>) cacheService.getObject(CacheKey.INDEX_NEW_BOOK_KEY);
-        if (result == null || result.size() == 0) {
+        List<Book> result = cacheService.getList(CacheKey.INDEX_NEW_BOOK_KEY, Book.class);
+        if (result == null || result.isEmpty()) {
             result = listRank((byte) 1, 10);
             cacheService.setObject(CacheKey.INDEX_NEW_BOOK_KEY, result, 3600);
         }
@@ -193,8 +189,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookVO> listUpdateRank() {
-        List<BookVO> result = (List<BookVO>) cacheService.getObject(CacheKey.INDEX_UPDATE_BOOK_KEY);
-        if (result == null || result.size() == 0) {
+        List<BookVO> result = cacheService.getList(CacheKey.INDEX_UPDATE_BOOK_KEY, BookVO.class);
+        if (result == null || result.isEmpty()) {
             List<Book> bookPOList = listRank((byte) 2, 23);
             result = BeanUtil.copyList(bookPOList, BookVO.class);
             cacheService.setObject(CacheKey.INDEX_UPDATE_BOOK_KEY, result, 60 * 10);
