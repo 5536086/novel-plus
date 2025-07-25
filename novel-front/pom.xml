@@ -96,6 +96,16 @@
                                         <include name="application-website.yml"/>
                                     </fileset>
                                 </copy>
+                                <copy todir="${basedir}/../templates/green/html" overwrite="true">
+                                    <fileset dir="${basedir}/src/main/resources/templates">
+                                        <include name="**/*.*"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${basedir}/../templates/green/static" overwrite="true">
+                                    <fileset dir="${basedir}/src/main/resources/static">
+                                        <include name="**/*.*"/>
+                                    </fileset>
+                                </copy>
                                 <copy todir="${project.build.directory}/build/templates" overwrite="true">
                                     <fileset dir="${basedir}/../templates">
                                         <include name="**/*.*"/>
