@@ -5,7 +5,7 @@
     <parent>
         <artifactId>novel</artifactId>
         <groupId>com.java2nb</groupId>
-        <version>5.2.3</version>
+        <version>5.2.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -94,6 +94,16 @@
                                     <fileset dir="${basedir}/src/main/resources">
                                         <include name="application-alipay.yml"/>
                                         <include name="application-website.yml"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${basedir}/../templates/green/html" overwrite="true">
+                                    <fileset dir="${basedir}/src/main/resources/templates">
+                                        <include name="**/*.*"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${basedir}/../templates/green/static" overwrite="true">
+                                    <fileset dir="${basedir}/src/main/resources/static">
+                                        <include name="**/*.*"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.build.directory}/build/templates" overwrite="true">

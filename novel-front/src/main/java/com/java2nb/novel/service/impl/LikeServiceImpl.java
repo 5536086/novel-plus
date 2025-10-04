@@ -4,7 +4,7 @@ import com.java2nb.novel.service.LikeService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.scripting.support.StaticScriptSource;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import java.util.Collections;
 @Slf4j
 public class LikeServiceImpl implements LikeService {
 
-    private final RedisTemplate<Object, Object> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     private DefaultRedisScript<Long> toggleLikeScript;
 
@@ -33,19 +33,19 @@ public class LikeServiceImpl implements LikeService {
     public void init() {
         // Lua 脚本保证原子性操作
         String script = """
-            local key = KEYS[1]
-            local userId = ARGV[1]
-
-            local isLiked = redis.call('SISMEMBER', key, userId)
-
-            if isLiked == 1 then
-                redis.call('SREM', key, userId)
-            else
-                redis.call('SADD', key, userId)
-            end
-
-            return redis.call('SCARD', key)
-        """;
+                local key = KEYS[1]
+                local userId = ARGV[1]
+            
+                local isLiked = redis.call('SISMEMBER', key, userId)
+            
+                if isLiked == 1 then
+                    redis.call('SREM', key, userId)
+                else
+                    redis.call('SADD', key, userId)
+                end
+            
+                return redis.call('SCARD', key)
+            """;
 
         toggleLikeScript = new DefaultRedisScript<>();
         toggleLikeScript.setScriptSource(new StaticScriptSource(script));
@@ -89,6 +89,6 @@ public class LikeServiceImpl implements LikeService {
     }
 
     private Long executeToggle(String key, Long userId) {
-        return redisTemplate.execute(toggleLikeScript, Collections.singletonList(key), userId);
+        return redisTemplate.execute(toggleLikeScript, Collections.singletonList(key), String.valueOf(userId));
     }
 }

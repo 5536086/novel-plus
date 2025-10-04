@@ -43,7 +43,7 @@ public class BookController extends BaseController {
      * 查询首页小说设置列表数据
      */
     @GetMapping("listBookSetting")
-    public RestResult<Map<Byte, List<BookSettingVO>>> listBookSetting() {
+    public RestResult<Map<String, List<BookSettingVO>>> listBookSetting() {
         return RestResult.ok(bookService.listBookSettingVO());
     }
 

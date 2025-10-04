@@ -16,9 +16,10 @@ public interface BookService {
 
     /**
      * 查询首页小说设置列表数据
+     *
      * @return
-     * */
-    Map<Byte, List<BookSettingVO>> listBookSettingVO();
+     */
+    Map<String, List<BookSettingVO>> listBookSettingVO();
 
     /**
      * 查询首页点击榜单数据

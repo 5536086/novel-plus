@@ -110,20 +110,6 @@ public class AuthorController extends BaseController {
         return RestResult.ok();
     }
 
-    /**
-     * 更新章节名
-     */
-    @PostMapping("updateIndexName")
-    public RestResult<Void> updateIndexName(Long indexId, String indexName, HttpServletRequest request) {
-
-        Author author = checkAuthor(request);
-
-        //更新章节名
-        bookService.updateIndexName(indexId, indexName, author.getId());
-
-        return RestResult.ok();
-    }
-
 
     /**
      * 发布章节内容
