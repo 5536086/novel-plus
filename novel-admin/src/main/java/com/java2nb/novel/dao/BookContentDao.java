@@ -4,6 +4,7 @@ import com.java2nb.common.annotation.SanitizeMap;
 
 import com.java2nb.novel.domain.BookContentDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -33,4 +34,6 @@ public interface BookContentDao {
     int batchRemove(Long[] ids);
 
     int removeByIndexIds(Long[] indexIds);
+
+    List<BookContentDO> listByIndexIds(@Param("indexIds") List<Long> indexIds);
 }

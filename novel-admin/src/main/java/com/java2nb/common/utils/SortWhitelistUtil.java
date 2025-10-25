@@ -11,7 +11,7 @@ import java.util.Set;
 public class SortWhitelistUtil {
 
     // 白名单字段
-    private static final Set<String> ALLOWED_COLUMNS = Set.of("id", "name", "order_num");
+    private static final Set<String> ALLOWED_COLUMNS = Set.of("id", "name", "order_num","index_num");
 
     // 白名单排序方式
     private static final Set<String> ALLOWED_ORDERS = Set.of("asc", "desc");
